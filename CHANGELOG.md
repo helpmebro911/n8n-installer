@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+## [1.2.1] - 2026-01-16
+
+### Added
+- **Temporal** - Temporal server and UI for Postiz workflow orchestration (#33)
+
 ## [1.2.0] - 2026-01-12
 
 ### Added

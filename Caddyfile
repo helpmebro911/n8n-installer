@@ -81,6 +81,14 @@
     reverse_proxy postiz:5000
 }
 
+# Temporal UI (workflow orchestration for Postiz)
+{$TEMPORAL_UI_HOSTNAME} {
+    basic_auth {
+        {$TEMPORAL_UI_USERNAME} {$TEMPORAL_UI_PASSWORD_HASH}
+    }
+    reverse_proxy temporal-ui:8080
+}
+
 # Databasus
 {$DATABASUS_HOSTNAME} {
     reverse_proxy databasus:4005

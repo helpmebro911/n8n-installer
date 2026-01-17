@@ -339,6 +339,9 @@ services:
       PORTAINER_HOSTNAME: ${PORTAINER_HOSTNAME}
       DATABASUS_HOSTNAME: ${DATABASUS_HOSTNAME}
       POSTIZ_HOSTNAME: ${POSTIZ_HOSTNAME}
+      TEMPORAL_UI_HOSTNAME: ${TEMPORAL_UI_HOSTNAME}
+      TEMPORAL_UI_USERNAME: ${TEMPORAL_UI_USERNAME}
+      TEMPORAL_UI_PASSWORD_HASH: ${TEMPORAL_UI_PASSWORD_HASH}
       PROMETHEUS_HOSTNAME: ${PROMETHEUS_HOSTNAME}
       PROMETHEUS_PASSWORD_HASH: ${PROMETHEUS_PASSWORD_HASH}
       PROMETHEUS_USERNAME: ${PROMETHEUS_USERNAME}
@@ -778,6 +781,50 @@ services:
       - portainer_data:/data
       - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock
 
+  temporal:
+    image: temporalio/auto-setup:latest
+    container_name: temporal
+    profiles: ["postiz"]
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+    environment:
+      DB: postgres12
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: ${POSTGRES_PASSWORD}
+      POSTGRES_SEEDS: postgres
+      DB_PORT: 5432
+      TEMPORAL_UINAMESPACE: default
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "tctl cluster health | grep -q SERVING || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  temporal-ui:
+    image: temporalio/ui:latest
+    container_name: temporal-ui
+    profiles: ["postiz"]
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+    environment:
+      TEMPORAL_UIADDRESS: temporal:7233
+      TEMPORAL_UICORS_ORIGINS: http://localhost:3000
+    depends_on:
+      temporal:
+        condition: service_healthy
+
   postiz:
     image: ghcr.io/gitroomhq/postiz-app:latest
     container_name: postiz
@@ -796,6 +843,7 @@ services:
       NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
       REDIS_URL: "redis://redis:6379"
       STORAGE_PROVIDER: "local"
+      TEMPORAL_UIADDRESS: temporal:7233
       UPLOAD_DIRECTORY: "/uploads"
       # Social Media API Settings
       X_API_KEY: ${X_API_KEY}
@@ -836,6 +884,8 @@ services:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      temporal:
         condition: service_healthy
 
   databasus:

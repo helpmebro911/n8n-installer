@@ -327,6 +327,20 @@ if is_profile_active "postiz"; then
     }")
 fi
 
+# Temporal UI
+if is_profile_active "postiz"; then
+    SERVICES_ARRAY+=("    \"temporal-ui\": {
+      \"hostname\": \"$(json_escape "$TEMPORAL_UI_HOSTNAME")\",
+      \"credentials\": {
+        \"username\": \"$(json_escape "$TEMPORAL_UI_USERNAME")\",
+        \"password\": \"$(json_escape "$TEMPORAL_UI_PASSWORD")\"
+      },
+      \"extra\": {
+        \"note\": \"Workflow orchestration admin for Postiz\"
+      }
+    }")
+fi
+
 # WAHA
 if is_profile_active "waha"; then
     SERVICES_ARRAY+=("    \"waha\": {

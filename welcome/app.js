@@ -340,6 +340,14 @@
             category: 'tools',
             docsUrl: 'https://docs.postiz.com'
         },
+        'temporal-ui': {
+            name: 'Temporal UI',
+            description: 'Postiz Workflow Orchestration',
+            icon: 'TM',
+            color: 'bg-violet-500',
+            category: 'tools',
+            docsUrl: 'https://docs.temporal.io/'
+        },
         'waha': {
             name: 'WAHA',
             description: 'WhatsApp HTTP API',
