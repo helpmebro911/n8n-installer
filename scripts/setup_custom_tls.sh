@@ -236,6 +236,10 @@ main() {
     log_info "Using certificate: $cert_file"
     log_info "Using key: $key_file"
 
+    # Ensure certificate files are readable by Caddy container
+    # (Docker volume mounts preserve host permissions, Caddy may run as different UID)
+    chmod 644 "$CERTS_DIR/$cert_file" "$CERTS_DIR/$key_file"
+
     # Generate configuration
     generate_config "$cert_file" "$key_file"
 
